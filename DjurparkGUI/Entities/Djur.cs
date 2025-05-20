@@ -13,6 +13,9 @@
         public int Popularitet { get; set; }
 
         public int HabitatId { get; set; }
+
+        // Lista över besökare som gillar detta djur.
+        public ICollection<FavoritDjur> GillasAvBesökare { get; set; } = new List<FavoritDjur>();
         public Habitat Habitat { get; set; } // Navigation
     }
 }
