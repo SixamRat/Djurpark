@@ -583,33 +583,3 @@ namespace DjurparkGUI
         }
 
 
-        // ------------------------------------------
-        // FORTSÄTTNING: ViewVisits, ViewVisitsByVisitor, SearchAnimals, SimulateDay, ShowStatistics
-
-
-
-        // ------------------------------------------
-        // Här skulle sedan alla metoder fortsätta:
-        // AddAnimal
-        // ViewAnimals
-        // UpdateAnimalStatus
-        // DeleteAnimal
-        // AddHabitat
-        // ViewHabitats
-        // DeleteHabitat
-        // AddVisitor
-        // ViewVisitors
-        // UpdateVisitorContact
-        // DeleteVisitor
-        // ViewVisits
-        // ViewVisitsByVisitor
-        // SearchAnimals
-        // SimulateDay
-        // ShowStatistics
-
-        // ------------------------------------------
-
-        // (Fortsätter du vill jag skriva in exakt alla metoder också här!)
-
-    }
-}

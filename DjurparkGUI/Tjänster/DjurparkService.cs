@@ -93,7 +93,7 @@ namespace DjurparkGUI.Tjänster
             Console.Write("\nAnge ID på djuret som ska tas bort: ");
             if (!int.TryParse(Console.ReadLine(), out int djurId))
             {
-                Console.WriteLine("❌ Felaktigt ID.");
+                Console.WriteLine("Felaktigt ID.");
                 return;
             }
 
@@ -115,7 +115,7 @@ namespace DjurparkGUI.Tjänster
        
         public async Task LäggTillHabitatAsync()
         {
-            Console.WriteLine("🌿 Lägg till nytt habitat\n");
+            Console.WriteLine("Lägg till nytt habitat\n");
 
             Console.Write("Namn: ");
             string namn = Console.ReadLine();
@@ -136,7 +136,7 @@ namespace DjurparkGUI.Tjänster
             _context.Habitats.Add(habitat);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine("✅ Habitat tillagt!");
+            Console.WriteLine("Habitat tillagt!");
         }
 
         
@@ -289,14 +289,14 @@ namespace DjurparkGUI.Tjänster
             var besökare = await _context.Besökare.FindAsync(id);
             if (besökare == null)
             {
-                Console.WriteLine("❌ Besökaren hittades inte.");
+                Console.WriteLine("Besökaren hittades inte.");
                 return;
             }
 
             _context.Besökare.Remove(besökare);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine(" Besökare borttagen!");
+            Console.WriteLine("Besökare borttagen!");
         }
         
         /// Visar alla besök med datum, besökare och om biljetten var betald.
