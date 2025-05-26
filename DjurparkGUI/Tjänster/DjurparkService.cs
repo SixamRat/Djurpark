@@ -109,5 +109,85 @@ namespace DjurparkGUI.Tjänster
 
             Console.WriteLine("Djuret borttaget!");
         }
+
+        
+        /// Låter användaren lägga till ett nytt habitat via konsolen.
+       
+        public async Task LäggTillHabitatAsync()
+        {
+            Console.WriteLine("🌿 Lägg till nytt habitat\n");
+
+            Console.Write("Namn: ");
+            string namn = Console.ReadLine();
+
+            Console.Write("Växtlighet: ");
+            string växtlighet = Console.ReadLine();
+
+            Console.Write("Klimat: ");
+            string klimat = Console.ReadLine();
+
+            var habitat = new Habitat
+            {
+                Namn = namn,
+                Växtlighet = växtlighet,
+                Klimat = klimat
+            };
+
+            _context.Habitats.Add(habitat);
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine("✅ Habitat tillagt!");
+        }
+
+        
+        /// Skriver ut alla habitat i databasen till konsolen.
+       
+        public async Task VisaAllaHabitatAsync()
+        {
+            Console.WriteLine(" Alla habitat\n");
+
+            var habitats = await _context.Habitats.ToListAsync();
+            foreach (var h in habitats)
+            {
+                Console.WriteLine($"ID: {h.HabitatId} | {h.Namn} ({h.Klimat}) – Växtlighet: {h.Växtlighet}");
+            }
+        }
+
+       
+        /// Låter användaren ta bort ett habitat baserat på ID.
+        /// Kontroll görs så att ID är giltigt.
+        
+        public async Task TaBortHabitatAsync()
+        {
+            Console.WriteLine("Ta bort habitat\n");
+
+            // Lista alla habitat för att välja
+            var habitats = await _context.Habitats.ToListAsync();
+            foreach (var h in habitats)
+            {
+                Console.WriteLine($"ID: {h.HabitatId} | {h.Namn}");
+            }
+
+            Console.Write("\nAnge ID på habitatet som ska tas bort: ");
+            if (!int.TryParse(Console.ReadLine(), out int habitatId))
+            {
+                Console.WriteLine("Felaktigt ID.");
+                return;
+            }
+
+            var habitat = await _context.Habitats.FindAsync(habitatId);
+            if (habitat == null)
+            {
+                Console.WriteLine("Habitatet hittades inte.");
+                return;
+            }
+
+            _context.Habitats.Remove(habitat);
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine("Habitat borttaget!");
+        }
+
+
     }
 }
