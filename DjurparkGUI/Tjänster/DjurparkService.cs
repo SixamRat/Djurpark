@@ -405,6 +405,104 @@ namespace DjurparkGUI.Tjänster
 
             Console.WriteLine("Besök tillagt!");
         }
+        
+        /// Visar statistik om mest populära djuret, habitatet med flest djur, inställningar och antal besök/månad.
+        
+        public async Task VisaStatistikAsync()
+        {
+            Console.WriteLine("Statistik för Djurparken\n");
+
+            // Hämta djur, habitat och inställningar
+            var djurLista = await _context.Djur.Include(d => d.Habitat).ToListAsync();
+            var besökLista = await _context.Besök.ToListAsync();
+            var settings = await _context.Settings.FirstOrDefaultAsync();
+
+            if (!djurLista.Any() || settings == null)
+            {
+                Console.WriteLine("Ingen data att visa.");
+                return;
+            }
+
+            // Mest populära djuret (högst popularitet)
+            var populärasteDjur = djurLista.OrderByDescending(d => d.Popularitet).FirstOrDefault();
+
+            // Populäraste habitat (baserat på flest antal djur)
+            var mestPopuläraHabitat = djurLista
+                .GroupBy(d => d.Habitat.Namn)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault();
+
+            // Visa allmän info
+            Console.WriteLine($"Mest populära djuret: {populärasteDjur?.Namn} ({populärasteDjur?.Art})");
+            Console.WriteLine($"Populäraste habitatet: {mestPopuläraHabitat?.Key}");
+            Console.WriteLine($"Entrépris: {settings.EntréPris:C}");
+            Console.WriteLine($"Max antal besökare: {settings.MaxAntalBesökare}");
+
+            // Gruppera och visa antal besök per månad
+            var grupperadeBesök = besökLista
+                .GroupBy(b => b.Datum.Month)
+                .Select(g => new { Månad = g.Key, Antal = g.Count() })
+                .OrderBy(g => g.Månad);
+
+            Console.WriteLine("\nAntal besök per månad:");
+            foreach (var group in grupperadeBesök)
+            {
+                Console.WriteLine($"Månad {group.Månad}: {group.Antal} besök");
+            }
+        }
+        
+        /// Simulerar 7 dagars verksamhet i parken med slumpmässigt antal besökare per dag,
+        /// beräknar intäkter, kostnader och resultat per dag samt total summering.
+       
+        public async Task SimuleraSjuDagarAsync()
+        {
+            Console.WriteLine("Simulerar 7 dagar i parken...\n");
+
+            var settings = await _context.Settings.FirstOrDefaultAsync();
+            var djurLista = await _context.Djur.ToListAsync();
+
+            if (settings == null || !djurLista.Any())
+            {
+                Console.WriteLine("Saknas inställningar eller djurdata.");
+                return;
+            }
+
+            decimal totalIntäkter = 0;
+            decimal totalKostnader = 0;
+            Random rnd = new Random();
+
+            for (int dag = 1; dag <= 7; dag++)
+            {
+                // Slumpa antal besökare (bas + påverkan av popularitet)
+                int basbesökare = rnd.Next(40, 80);
+                int extra = djurLista.Sum(d => d.Popularitet) / 10; // ex: 250 popularitet = +25
+                int dagensBesökare = Math.Min(basbesökare + extra, settings.MaxAntalBesökare);
+
+                // Beräkna ekonomi för dagen
+                decimal dagsintäkter = dagensBesökare * settings.EntréPris;
+                decimal dagskostnader = djurLista.Sum(d => (d.Matkostnad + d.Omvårdnadskostnad) / 30); // 1/30 av månaden
+                decimal resultat = dagsintäkter - dagskostnader;
+
+                // Summera
+                totalIntäkter += dagsintäkter;
+                totalKostnader += dagskostnader;
+
+                // Visa för dagen
+                Console.WriteLine($"Dag {dag}:");
+                Console.WriteLine($"Besökare: {dagensBesökare}");
+                Console.WriteLine($"Intäkter: {dagsintäkter:C0}");
+                Console.WriteLine($"Kostnader: {dagskostnader:C0}");
+                Console.WriteLine($"Resultat: {(resultat >= 0 ? "+" : "")}{resultat:C0}\n");
+            }
+
+            // Totalsummering
+            Console.WriteLine("Sammanställning för 7 dagar:");
+            Console.WriteLine($"Totala intäkter: {totalIntäkter:C0}");
+            Console.WriteLine($"Totala kostnader: {totalKostnader:C0}");
+            Console.WriteLine($"Totalt resultat: {(totalIntäkter - totalKostnader):C0}");
+        }
+
+
 
 
     }
