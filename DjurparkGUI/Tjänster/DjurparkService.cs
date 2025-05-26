@@ -67,9 +67,91 @@ namespace DjurparkGUI.Tjänster
             }
         }
 
-       
-        /// Lägger till ett favoritdjur kopplat till en specifik besökare.
         
+        /// Frågar användaren efter information om ett nytt djur och sparar det till databasen.
+       
+        public async Task LäggTillDjurViaInputAsync()
+        {
+            Console.WriteLine("Lägg till nytt djur\n");
+
+            Console.Write("Namn: ");
+            string namn = Console.ReadLine();
+
+            Console.Write("Art: ");
+            string art = Console.ReadLine();
+
+            Console.Write("Födelsedatum (yyyy-mm-dd): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime födelsedatum))
+            {
+                Console.WriteLine("Felaktigt datumformat.");
+                return;
+            }
+
+            Console.Write("Kön (Hane/Hona): ");
+            string kön = Console.ReadLine();
+
+            Console.Write("Status (Frisk/Under observation): ");
+            string status = Console.ReadLine();
+
+            Console.Write("Matkostnad (kr/mån): ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal matkostnad))
+            {
+                Console.WriteLine("Felaktig matkostnad.");
+                return;
+            }
+
+            Console.Write("Omvårdnadskostnad (kr/mån): ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal omvårdnadskostnad))
+            {
+                Console.WriteLine("Felaktig omvårdnadskostnad.");
+                return;
+            }
+
+            Console.Write("Popularitet (0–100): ");
+            if (!int.TryParse(Console.ReadLine(), out int popularitet))
+            {
+                Console.WriteLine("Felaktig popularitetspoäng.");
+                return;
+            }
+
+            var habitats = await _context.Habitats.ToListAsync();
+            Console.WriteLine("\nTillgängliga habitat:");
+            foreach (var h in habitats)
+            {
+                Console.WriteLine($"{h.HabitatId}. {h.Namn}");
+            }
+
+            Console.Write("Ange Habitat-ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int habitatId) ||
+                !habitats.Any(h => h.HabitatId == habitatId))
+            {
+                Console.WriteLine("❌ Ogiltigt habitat-ID.");
+                return;
+            }
+
+            var djur = new Djur
+            {
+                Namn = namn,
+                Art = art,
+                Födelsedatum = födelsedatum,
+                Kön = kön,
+                Status = status,
+                Matkostnad = matkostnad,
+                Omvårdnadskostnad = omvårdnadskostnad,
+                Popularitet = popularitet,
+                HabitatId = habitatId
+            };
+
+            _context.Djur.Add(djur);
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine("✅ Djur tillagt!");
+        }
+
+
+
+        /// Lägger till ett favoritdjur kopplat till en specifik besökare.
+
         public async Task LäggTillFavoritDjurAsync(int besökareId, int djurId)
         {
             var fav = new FavoritDjur { BesökareId = besökareId, DjurId = djurId };
